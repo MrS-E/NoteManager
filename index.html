@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Project Managment</title>
+    <style>
+    table, td {
+        border: 1px solid;
+    }
+
+    th {
+       border-bottom: 3px solid;
+    }
+
+    table {
+        width: calc(100% - 2vmin);
+        border-collapse: collapse;
+        margin: 1vmin;
+        margin-bottom: 2vmin;
+        border: 3px black solid;
+
+    }
+    </style>
+</head>
+<body onload="load()">
+
+<div id="dialog">
+    <button style="margin: 1vmin" onclick="var i = prompt('Enter your inputs separated by a tilde ~').split('~');note(i[0], i[1], i[2])">Notiz hinzufügen</button>
+</div>
+
+<div id="main">
+
+</div>
+
+<script>
+    function load(){
+        const text = document.getElementById("main");
+        text.innerHTML = ""
+        var xmlhttp = new XMLHttpRequest();
+        var data;
+        xmlhttp.open("GET", "./load.php", true);
+        xmlhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                data = JSON.parse(this.responseText);
+                //text.innerHTML = this.responseText;
+                console.log(data);
+                for(var x=0; x<data.length;x++) {
+                    var table = "<table>";
+                    for (var key in data[x]) {
+                        table += `<tr><td><strong>${key}</strong></td><td>${data[x][key]}</td></tr>`;
+                    }
+                    table += "</table>";
+                    text.innerHTML += table
+                }
+
+
+            } else {
+                console.error("Connection failed");
+            }
+        };
+        xmlhttp.send();
+        console.log("done comments post ");
+    }
+    function note(title = "", desc = "", todo = ""){
+        console.log(title+ "," + desc+ "," + todo + ",")
+
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.open("GET", "./add.php?title="+title+"&desc="+desc+"&todo="+todo, true);
+        xmlhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                console.log(this.responseText);
+            } else {
+                console.error("Connection failed");
+            }
+        };
+        xmlhttp.send();
+        load();
+    }
+</script>
+</body>
+</html>
